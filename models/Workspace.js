@@ -22,8 +22,9 @@ Workspace.init(
         return uuid();
       },
     },
+   
   },
-  {
+  { 
     sequelize,
     timestamps: false,
     freezeTableName: true,

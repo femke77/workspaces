@@ -1,6 +1,5 @@
 // HOW TO INCLUDE PROFILE PICTURE?
 const signupFormHandler = async (event) => {
-  event.preventDefault();
 
   const email = document.querySelector("#email-signup").value.trim();
   const username = document.querySelector("#username-signup").value.trim();
@@ -19,7 +18,7 @@ const signupFormHandler = async (event) => {
     let ok = response.ok;
 
     if (ok) {
-      res.json("Successfully logged in");
+      response.json("Successfully logged in");
     } else {
       // CHANGE ALERT
       alert(response.statusText);
@@ -27,88 +26,9 @@ const signupFormHandler = async (event) => {
   }
 };
 
-const generateUUID = () => {
-  return Math.floor((1 + Math.random()) * 0x10000)
-    .toString(16)
-    .substring(1);
-};
-
-// Creating a new workspace
-const newWorkspace = async (event) => {
-  const workspaceName = document.getElementById("workspaceName").value.trim();
-  const join_code = generateUUID(12);
-
-  console.log(join_code);
-
-  if (workspaceName) {
-    const result = await fetch("/api/workspace", {
-      method: "POST",
-      body: JSON.stringify({ name: workspaceName, join_code: join_code }),
-      headers: { "Content-Type": "application/json" },
-    });
-  } else {
-    alert(response.statusText);
-  }
-};
-
-// Create workspace
-document
-  .querySelector("#generate-code")
-  .addEventListener("click", async function (e) {
-    const workspaceName = document.getElementById("workspaceName").value.trim();
-
-    if (workspaceName) {
-      const response = await fetch("/api/workspace", {
-        method: "POST",
-        body: JSON.stringify({ name: workspaceName }),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (response.ok) {
-        document.location.replace("/home");
-        console.log("Added new workspace");
-      } else {
-        alert("Unable to add workspace");
-      }
-    } else {
-      alert(response.statusText);
-    }
-  });
-
-// Join workspace
-document
-  .querySelector("#join-btn")
-  .addEventListener("click", async function (e) {
-    const join_code = document.querySelector("#join-code").value.trim();
-
-    // use the join code to look up the workspace
-    const response = await fetch(`/api/workspace/${join_code}`);
-    if (response.ok) {
-      const workspace = await response.json();
-      console.log(workspace);
-      //add user to workspace
-      const addUserRes = await fetch(
-        `/api/workspace/add-user/${workspace.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (addUserRes.ok) {
-        document.location.replace("/home");
-        console.log("Added user to workspace ", workspace.id);
-      } else {
-        alert("Unable to add you to workspace.");
-        document.location.replace("/");
-      }
-    } else {
-      alert("Workspace not found! Try again.");
-    }
-  });
-
 // First name and last name
 document
-  .getElementById("user-info")
+  .getElementById("userDetails")
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -121,7 +41,8 @@ document
 document
   .getElementById("signup-form")
   .addEventListener("submit", function (event) {
-    event.preventDefault();
+    event.preventDefault()
+    signupFormHandler();
     setTimeout(function () {
       // Show the result notification
       var notification = document.getElementById("resultNotification");
@@ -138,9 +59,8 @@ document
         newWorkspace.classList.remove("hide");
       }, 1000);
     }, 1000);
-
-    signupFormHandler;
   });
+
 
 // Redirect to create workspace
 document
@@ -164,29 +84,69 @@ document.getElementById("joinOpt").addEventListener("click", function (event) {
   join.classList.remove("hide");
 });
 
-// Submit workspace name and generate code on screen
-// document
-//   .getElementById("workspaceForm")
-//   .addEventListener("submit", function (event) {
-//     event.preventDefault();
-//     newWorkspace;
-//   });
 
-// if (ok && workspaceName) {
-//   const result = await fetch("/api/workspace", {
-//     method: "POST",
-//     body: JSON.stringify({ name: workspaceName }),
-//     headers: { "Content-Type": "application/json" },
-//   });
+// Create workspace
+document
+  .querySelector("#workspaceForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault()
+    const workspaceName = document.getElementById("workspaceName").value.trim();
 
-//   ok = result.ok;
-// }
+    if (workspaceName) {
+      const response = await fetch("/api/workspace", {
+        method: "POST",
+        body: JSON.stringify({ name: workspaceName }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-// document
-//   .getElementById("workspaceForm")
-//   .addEventListener("submit", function (event) {
-//     event.preventDefault();
+      if (response.ok) {
 
-//     document.getElementById("workplace-info").style.display = "none";
-//     const userInfo = document.getElementById("user-info");
-//     userInfo.classList.remove("hide");
+        const workspace = await response.json()
+        await fetch(`/api/workspace/add-user/${workspace.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
+          })
+
+        console.log("Added new workspace");
+        document.location.replace("/home");
+      } else {
+        alert("Unable to add workspace");
+      }
+    } else {
+      alert(response.statusText);
+    }
+  });
+
+// Join workspace
+document
+  .querySelector("#joinForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault()
+    const join_code = document.querySelector("#join-code").value.trim();
+
+    // use the join code to look up the workspace
+    const response = await fetch(`/api/workspace/${join_code}`);
+    if (response.ok) {
+      const workspace = await response.json();
+      console.log(workspace);
+      //add user to workspace
+      const addUserRes = await fetch(
+        `/api/workspace/add-user/${workspace.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (addUserRes.ok) {
+        console.log(addUserRes);
+        document.location.replace("/home");
+        console.log("Added user to workspace ", workspace.id);
+      } else {
+        alert("Unable to add you to workspace.");
+        document.location.replace("/");
+      }
+    } else {
+      alert("Workspace not found! Try again.");
+    }
+  });
