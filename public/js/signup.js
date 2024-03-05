@@ -3,10 +3,16 @@ const signupFormHandler = async () => {
 
   const email = document.querySelector("#email-signup").value.trim();
   const username = document.querySelector("#username-signup").value.trim();
-  const password = document.querySelector("#password-signup").value.trim();
+  const password = document.querySelector("#password-confirm").value.trim();
+  const passwordConfirm = document.querySelector("#password-signup").value.trim();
+ 
   const first = document.getElementById("firstName").value.trim();
   const last = document.getElementById("lastName").value.trim();
 
+  if (password !== passwordConfirm){
+    alert("Passwords do not match.")
+    return;
+  }
   // Add password confirmation
   if (email && username && password && first && last) {
     const response = await fetch("/api/users", {
@@ -15,29 +21,27 @@ const signupFormHandler = async () => {
       headers: { "Content-Type": "application/json" },
     });
 
-    let ok = response.ok;
+    if (response.ok) {
 
-    if (ok) {
+      // Show the result notification
+      var notification = document.getElementById("resultNotification");
+      notification.classList.remove("hide");
+
+      // Set a timeout to hide the notification after 2 seconds
       setTimeout(function () {
-        // Show the result notification
-        var notification = document.getElementById("resultNotification");
-        notification.classList.remove("hide");
-  
-        // Set a timeout to hide the notification after 2 seconds
-        setTimeout(function () {
-          notification.classList.add("hide");
-        }, 1000);
-  
-        setTimeout(function () {
-          document.getElementById("user-loginDetails").style.display = "none";
-          const newWorkspace = document.getElementById("newWorkspace");
-          newWorkspace.classList.remove("hide");
-        }, 1000);
+        notification.classList.add("hide");
       }, 1000);
+
+      setTimeout(function () {
+        document.getElementById("user-loginDetails").style.display = "none";
+        const newWorkspace = document.getElementById("newWorkspace");
+        newWorkspace.classList.remove("hide");
+      }, 1500);
+
       response.json("Successfully logged in");
     } else {
       // CHANGE ALERT
-      alert("There is a problem with your signup");
+      alert("There is a problem with your sign up");
     }
   }
 };
@@ -100,15 +104,6 @@ document
       });
 
       if (response.ok) {
-
-        const workspace = await response.json()
-        await fetch(`/api/workspace/add-user/${workspace.id}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" }
-          })
-
-        console.log("Added new workspace");
         document.location.replace("/invite");
       } else {
         alert("Unable to add workspace");
@@ -139,9 +134,9 @@ document
         }
       );
       if (addUserRes.ok) {
-        console.log(addUserRes);
-        document.location.replace("/home");
+       
         console.log("Added user to workspace ", workspace.id);
+        document.location.replace("/home");
       } else {
         alert("Unable to add you to workspace.");
         document.location.replace("/");

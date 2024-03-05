@@ -17,6 +17,11 @@ const transporter = nodemailer.createTransport({
 router.post("/", async (req, res) => {
   try {
     const workspaceData = await Workspace.create(req.body);
+    await User.update({ workspace_id: workspaceData.id }, {
+      where: {
+        id: req.session.user_id
+      }
+    })
     res.status(201).json(workspaceData);
   } catch (error) {
     res.status(500).json(error.message);
@@ -43,7 +48,7 @@ router.get("/:code", async (req, res) => {
 // will add the logged in user to the workspace with the passed id
 router.put('/add-user/:id', async (req, res) => {
   try {
-   await User.update({ workspace_id: req.params.id },
+    await User.update({ workspace_id: req.params.id },
       {
         where: {
           id: req.session.user_id
@@ -56,20 +61,22 @@ router.put('/add-user/:id', async (req, res) => {
 })
 
 // mail out the invites using nodemailer/ethereal
-router.post('/invites', async (req, res)=> {
-  const {values, join_code} = req.body
- console.log(values);
+router.post('/invites', async (req, res) => {
+  try {
+    const { values, join_code } = req.body;
 
-  const info = await transporter.sendMail({
-    from: '"Elevate" <elevate@ethereal.email>', // sender address
-    to: values, // list of receivers
-    subject: "You've been invited! ✔", // Subject line
-    text: `You've been invited to a workspace. Your join code is ${join_code}`, // plain text body
-    html: `<b>You've been invited to a workspace. Your join code is '${join_code}'</b>`, // html body
-  });
+    const info = await transporter.sendMail({
+      from: '"Elevate" <elevate@ethereal.email>', // sender address
+      to: values, // list of receivers
+      subject: "You've been invited! ✔", // Subject line
+      text: `You've been invited to a workspace. Your join code is ${join_code}`, // plain text body
+      html: `<b>You've been invited to a workspace. Your join code is '${join_code}'</b>`, // html body
+    });
+    res.json(info)
+  } catch (err) {
+    res.status(500).json(err.message)
+  }
 
- 
-  res.json(info)
 })
 
 module.exports = router;
