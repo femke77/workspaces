@@ -1,7 +1,7 @@
 function generateHTML() {
     let newInput = document.createElement("input")
     newInput.placeholder = "Enter email"
-    newInput.classList.add("email")
+    newInput.classList.add("email", "mb-2", 'w-50')
     document.getElementById("email-container").append(newInput)
 }
 

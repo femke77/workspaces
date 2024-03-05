@@ -1,12 +1,19 @@
-<div>
-    <button type="button" id="add-btn" class="btn">Add A User</button>
-    <form id="invite-form">
-        <div id="email-container">
-            <input type="hidden" id="join_code" value="{{workspace.join_code}}">
-            <input type="email" class="email" placeholder="Enter email">
+<div class="h-75">
+    <h2 class="mb-5 text-center">Invite Users to Workspace</h2>
+    <div class="d-flex flex-column justify-content-between h-100">
+        <div>
+            <button type="button" id="add-btn" class="btn btn-primary mb-2"> + Add Another Email</button>
+            <form id="invite-form">
+                <div id="email-container" class="d-flex flex-column">
+                    <input type="hidden" id="join_code" value="{{workspace.join_code}}">
+                    <input type="email" class="email mb-2 w-50" placeholder="Enter email">
+                </div>
+                <button class="btn btn-primary" type="submit" id="submit-btn">Submit All Invites</button>
+            </form>
         </div>
-        <button type="submit" id="submit-btn">Submit All Invites</button>
-    </form>
+
+        <a class="text-right" href="#">Not Now</a>
+    </div>
 </div>
 
 <script src="/js/invite.js"></script>

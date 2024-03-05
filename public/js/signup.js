@@ -1,5 +1,5 @@
 // HOW TO INCLUDE PROFILE PICTURE?
-const signupFormHandler = async (event) => {
+const signupFormHandler = async () => {
 
   const email = document.querySelector("#email-signup").value.trim();
   const username = document.querySelector("#username-signup").value.trim();
@@ -18,10 +18,26 @@ const signupFormHandler = async (event) => {
     let ok = response.ok;
 
     if (ok) {
+      setTimeout(function () {
+        // Show the result notification
+        var notification = document.getElementById("resultNotification");
+        notification.classList.remove("hide");
+  
+        // Set a timeout to hide the notification after 2 seconds
+        setTimeout(function () {
+          notification.classList.add("hide");
+        }, 1000);
+  
+        setTimeout(function () {
+          document.getElementById("user-loginDetails").style.display = "none";
+          const newWorkspace = document.getElementById("newWorkspace");
+          newWorkspace.classList.remove("hide");
+        }, 1000);
+      }, 1000);
       response.json("Successfully logged in");
     } else {
       // CHANGE ALERT
-      alert(response.statusText);
+      alert("There is a problem with your signup");
     }
   }
 };
@@ -43,22 +59,6 @@ document
   .addEventListener("submit", function (event) {
     event.preventDefault()
     signupFormHandler();
-    setTimeout(function () {
-      // Show the result notification
-      var notification = document.getElementById("resultNotification");
-      notification.classList.remove("hide");
-
-      // Set a timeout to hide the notification after 2 seconds
-      setTimeout(function () {
-        notification.classList.add("hide");
-      }, 1000);
-
-      setTimeout(function () {
-        document.getElementById("user-loginDetails").style.display = "none";
-        const newWorkspace = document.getElementById("newWorkspace");
-        newWorkspace.classList.remove("hide");
-      }, 1000);
-    }, 1000);
   });
 
 
@@ -109,7 +109,7 @@ document
           })
 
         console.log("Added new workspace");
-        document.location.replace("/home");
+        document.location.replace("/invite");
       } else {
         alert("Unable to add workspace");
       }
